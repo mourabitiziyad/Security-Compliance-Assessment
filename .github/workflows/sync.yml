@@ -39,21 +39,12 @@ jobs:
       - name: Merge upstream changes into fork, accepting theirs on conflicts
         run: git merge upstream/main --no-ff --allow-unrelated-histories -X theirs
 
-      - name: Install git-filter-repo
+      - name: Filter out unwanted workflow files (skip the sync.yml)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install --user git-filter-repo
+          git rm --cached .github/workflows/nextjs.yml  # Example to remove specific workflows
+          git commit -m "Remove unwanted workflows"
 
-      - name: Remove unwanted workflow files but preserve sync.yml
-        run: |
-          find .github/workflows/ -type f ! -name 'sync.yml' -exec git rm --cached --ignore-unmatch {} +
-
-      - name: Commit changes
-        run: |
-          git commit -m "Preserve sync.yml and remove other workflows"
-
-      - name: Force push changes to your fork
+      - name: Push changes to your fork (skip sync.yml)
         run: |
           git push origin main --force --follow-tags
         env:
