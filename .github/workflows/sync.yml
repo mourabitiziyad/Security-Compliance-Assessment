@@ -3,9 +3,6 @@ name: Sync with Upstream Repository
 on:
   schedule:
     - cron: '0 * * * *'  # Run every hour
-  push:
-    branches:
-      - main  # Run when changes are pushed to the main branch of your fork
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
@@ -31,12 +28,11 @@ jobs:
       - name: Fetch upstream repository
         run: git fetch upstream
 
-      - name: Verify and set origin remote
+      - name: Create or checkout the sync branch
         run: |
-          git remote remove origin || true  # Remove if it exists
-          git remote add origin https://github.com/mourabitiziyad/Security-Compliance-Assessment.git
+          git checkout -b sync-branch || git checkout sync-branch
 
-      - name: Merge upstream changes into fork, accepting theirs on conflicts
+      - name: Merge upstream changes into sync-branch, accepting theirs on conflicts
         run: git merge upstream/main --no-ff --allow-unrelated-histories -X theirs
 
       - name: Filter out unwanted workflow files (skip the sync.yml)
@@ -44,8 +40,8 @@ jobs:
           find .github/workflows/ -type f ! -name 'sync.yml' -exec git rm --cached --ignore-unmatch {} +
           git commit -m "Remove unwanted workflows" || echo "No changes to commit"
 
-      - name: Push changes to your fork (skip sync.yml)
+      - name: Push changes to sync-branch
         run: |
-          git push origin main --force --follow-tags
+          git push origin sync-branch --force --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}  # Use the PAT instead of the default GITHUB_TOKEN
