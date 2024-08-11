@@ -45,9 +45,15 @@ jobs:
           sudo apt-get install -y python3-pip
           pip3 install --user git-filter-repo
 
-      - name: Filter out unwanted workflow files but exclude sync.yml from filtering
+      - name: Remove unwanted workflow files, preserving sync.yml
         run: |
-          git filter-repo --path-glob '.github/workflows/**' --invert-paths --path-include .github/workflows/sync.yml --force
+          git rm -r --cached --ignore-unmatch .github/workflows/
+          git checkout -- .github/workflows/sync.yml  # Restore sync.yml
+
+      - name: Commit changes
+        run: |
+          git add .github/workflows/sync.yml
+          git commit -m "Preserve sync.yml and remove other workflows"
 
       - name: Force push changes to your fork
         run: |
