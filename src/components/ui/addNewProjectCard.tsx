@@ -42,6 +42,8 @@ export default function AddNewProjectCard() {
     },
   );
 
+  const {refetch: refetchAssignedProjects} = api.project.getProjects.useQuery();
+
   // Mutation to create a project
   const { mutate: createProject, isPending: isCreatingProject } =
     api.project.createProject.useMutation({
@@ -54,6 +56,8 @@ export default function AddNewProjectCard() {
         setProjectName("");
         setDescription("");
         setSelectedParticipants([]);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        refetchAssignedProjects();
         router.push("/projects/" + data.id);
       },
       onError: (error) => {
@@ -72,6 +76,7 @@ export default function AddNewProjectCard() {
       description,
       participants: selectedParticipants.map((p) => p.id),
     });
+    
   };
 
   const handleParticipantSelect = (user: User) => {
