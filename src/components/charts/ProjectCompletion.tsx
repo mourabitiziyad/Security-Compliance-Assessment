@@ -1,7 +1,7 @@
 "use client";
 
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
-
+import React from "react";
 import {
   ChartConfig,
   ChartContainer,
@@ -37,7 +37,7 @@ const chartConfig = {
 export function ProjectCompletion() {
   return (
     <ChartContainer config={chartConfig}>
-      <RadarChart
+      <RadarChart data-testid="radar-chart"
         data={chartData}
         margin={{
           top: -40,
